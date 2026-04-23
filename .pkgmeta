@@ -1,0 +1,20 @@
+package-as: RememberMyRare
+
+externals:
+  Libs/LibStub:
+    url: https://repos.wowace.com/wow/libstub/mainline/tags/1.0
+    tag: latest
+  Libs/CallbackHandler-1.0:
+    url: https://repos.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+  Libs/HereBeDragons:
+    url: https://github.com/Nevcairiel/HereBeDragons
+    tag: latest
+
+ignore:
+  - .git
+  - .github
+  - tests
+  - agents
+  - .agents
+  - README.md
+  - .pkgmeta
