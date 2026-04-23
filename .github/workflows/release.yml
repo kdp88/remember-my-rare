@@ -15,4 +15,4 @@ jobs:
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
         with:
-          curse-id: 1522087
+          args: -p 1522087
