@@ -1,4 +1,4 @@
-## Interface: 120001
+## Interface: 120005
 ## Title: Remember My Rare
 ## Notes: Marks the world map and minimap with rare mobs you have killed
 ## Author: kp
