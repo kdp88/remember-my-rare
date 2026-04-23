@@ -12,6 +12,10 @@ local HBDPins
 local PIN_SIZE        = 14  -- slightly smaller than world-map pins
 local PIN_FRAME_LEVEL = 5   -- layers above Minimap base to stay visible over blips
 
+local NEAR_THRESHOLD = 0.08  -- ~150 yards in map-coordinate units
+local ALPHA_NEAR     = 0.2
+local ALPHA_FAR      = 1.0
+
 -- ─── Pin pool ──────────────────────────────────────────────────────────────
 
 local pool       = {}
@@ -50,10 +54,37 @@ local function ReleasePin(pin)
     table.insert(pool, pin)
 end
 
+-- ─── Proximity fade ────────────────────────────────────────────────────────
+
+local proximityFrame = CreateFrame("Frame")
+local proximityElapsed = 0
+proximityFrame:SetScript("OnUpdate", function(_, dt)
+    proximityElapsed = proximityElapsed + dt
+    if proximityElapsed < 1 then return end
+    proximityElapsed = 0
+
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if not mapID then return end
+    local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+    if not pos then return end
+
+    for _, pin in ipairs(activePins) do
+        if pin.kill.mapID == mapID then
+            local dx = pos.x - pin.kill.x
+            local dy = pos.y - pin.kill.y
+            local dist = math.sqrt(dx * dx + dy * dy)
+            pin:SetAlpha(dist < NEAR_THRESHOLD and ALPHA_NEAR or ALPHA_FAR)
+        else
+            pin:SetAlpha(ALPHA_FAR)
+        end
+    end
+end)
+
 -- ─── Public API ────────────────────────────────────────────────────────────
 
 -- Adds a pin for a single kill without rebuilding the entire set.
 function Minimap:AddPin(kill)
+    if RMR_DB.hidden then return end
     local pin = AcquirePin()
     pin.kill  = kill
     HBDPins:AddMinimapIconMap(
@@ -71,6 +102,8 @@ function Minimap:Refresh()
         ReleasePin(pin)
     end
     wipe(activePins)
+
+    if RMR_DB.hidden then return end
 
     for _, kill in pairs(RMR_DB.kills) do
         local pin = AcquirePin()

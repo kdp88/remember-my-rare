@@ -14,5 +14,7 @@ local ROOT = arg[0]:match("(.*[/\\])") .. "../"
 -- Load test suites (each file registers its TestXxx tables globally).
 dofile(ROOT .. "tests/test_data.lua")
 dofile(ROOT .. "tests/test_events.lua")
+dofile(ROOT .. "tests/test_config.lua")
+dofile(ROOT .. "tests/test_pins.lua")
 
 os.exit(lu.LuaUnit.run())

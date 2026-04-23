@@ -45,24 +45,52 @@ end
 
 -- ─── Frame factory ─────────────────────────────────────────────────────────
 -- Returns a table that mimics a WoW Frame well enough for Init() calls.
--- Tests can call frame:FireEvent(event, ...) to simulate WoW firing events.
+-- Tests can call frame:FireEvent(event, ...) to simulate WoW firing events,
+-- or frame:FireOnUpdate(dt) to simulate the engine's per-frame tick.
 
-CreateFrame = function(--[[frameType, name, parent]])
-    local frame = { _scripts = {} }
+_G._createdFrames = {}
+
+CreateFrame = function(frameType --[[, name, parent]])
+    local frame = {
+        _scripts   = {},
+        _alpha     = 1.0,
+        _visible   = false,
+        _frameType = frameType or "Frame",
+    }
 
     function frame:RegisterEvent() end
     function frame:UnregisterEvent() end
     function frame:SetScript(hook, fn) self._scripts[hook] = fn end
+    function frame:GetScript(hook) return self._scripts[hook] end
     function frame:GetFrameLevel() return 1 end
+    function frame:SetFrameLevel() end
+    function frame:Show()  self._visible = true  end
+    function frame:Hide()  self._visible = false end
+    function frame:SetAlpha(a) self._alpha = a end
+    function frame:GetAlpha()  return self._alpha end
+    function frame:SetSize() end
+    function frame:SetParent(p) self._parent = p end
+    function frame:ClearAllPoints() end
+    function frame:CreateTexture()
+        return { SetAllPoints = function() end, SetTexture = function() end }
+    end
 
-    -- Test helper: simulate WoW firing an event on this frame.
+    -- Test helpers
     function frame:FireEvent(event, ...)
         local fn = self._scripts["OnEvent"]
         if fn then fn(self, event, ...) end
     end
+    function frame:FireOnUpdate(dt)
+        local fn = self._scripts["OnUpdate"]
+        if fn then fn(self, dt) end
+    end
 
+    table.insert(_G._createdFrames, frame)
     return frame
 end
+
+-- Stub needed by WorldMap.lua (pins are parented to UIParent).
+UIParent = CreateFrame("Frame")
 
 -- ─── Unit API stubs (overridden per test as needed) ────────────────────────
 
@@ -85,6 +113,9 @@ CombatLogGetCurrentEventInfo = function()
 end
 
 -- ─── UI stubs ──────────────────────────────────────────────────────────────
+
+-- WoW global slash-command registry.
+SlashCmdList = {}
 
 Minimap = { GetFrameLevel = function() return 1 end }
 
@@ -143,10 +174,15 @@ RMR = {
 
 -- Reset the in-memory database to a clean state between tests.
 function ResetDB()
-    RMR_DB = { version = 1, kills = {} }
+    RMR_DB = { version = 1, kills = {}, hidden = false }
 end
 
 -- Reset HBDPins call log.
 function ResetPinCalls()
     _G._hbdPinsCalls = { worldmap = {}, minimap = {} }
+end
+
+-- Clear the frame registry (call before loading a module to track only its frames).
+function ResetFrames()
+    _G._createdFrames = {}
 end

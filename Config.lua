@@ -9,6 +9,7 @@ local function PrintHelp()
     print("  |cFFFFFF00/rmr list|r       — list all tracked kills")
     print("  |cFFFFFF00/rmr clear|r      — wipe all saved kills (asks for confirmation)")
     print("  |cFFFFFF00/rmr confirm|r    — confirm a pending /rmr clear")
+    print("  |cFFFFFF00/rmr toggle|r     — hide or show all pins on minimap and world map")
 end
 
 local clearPending = false
@@ -34,14 +35,23 @@ local function HandleCommand(input)
         end
 
     elseif cmd == "clear" then
-        if RMR.Data:Count() == 0 then
+        local count = RMR.Data:Count()
+        if count == 0 then
             print("|cFF00FF00RememberMyRare|r: Nothing to clear.")
         else
             clearPending = true
             print("|cFFFF4444RememberMyRare|r: This will delete all " ..
-                RMR.Data:Count() .. " kill records.")
+                count .. " kill records.")
             print("Type |cFFFFFF00/rmr confirm|r to proceed, or anything else to cancel.")
         end
+
+    elseif cmd == "toggle" then
+        clearPending = false
+        RMR_DB.hidden = not RMR_DB.hidden
+        RMR.Minimap:Refresh()
+        RMR.WorldMap:Refresh()
+        local state = RMR_DB.hidden and "hidden" or "visible"
+        print("|cFF00FF00RememberMyRare|r: Pins are now " .. state .. ".")
 
     elseif cmd == "confirm" then
         if clearPending then

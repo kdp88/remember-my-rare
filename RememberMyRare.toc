@@ -1,11 +1,9 @@
-## Interface: 110200
+## Interface: 120001
 ## Title: Remember My Rare
 ## Notes: Marks the world map and minimap with rare mobs you have killed
 ## Author: kp
 ## Version: 1.0.0
 ## SavedVariables: RMR_DB
-
-embeds.xml
 
 Core.lua
 Data.lua
@@ -14,3 +12,4 @@ Tooltip.lua
 WorldMap.lua
 Minimap.lua
 Config.lua
+embeds.xml

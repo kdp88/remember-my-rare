@@ -55,6 +55,7 @@ end
 -- Adds a pin for a single kill without rebuilding the entire set.
 -- Use this after recording a new kill to avoid O(n) teardown/rebuild.
 function WorldMap:AddPin(kill)
+    if RMR_DB.hidden then return end
     local pin = AcquirePin()
     pin.kill  = kill
     HBDPins:AddWorldMapIconMap(
@@ -71,6 +72,8 @@ function WorldMap:Refresh()
         ReleasePin(pin)
     end
     wipe(activePins)
+
+    if RMR_DB.hidden then return end
 
     for _, kill in pairs(RMR_DB.kills) do
         local pin = AcquirePin()

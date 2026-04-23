@@ -50,6 +50,7 @@ That's it. No setup required.
 |---------|-------------|
 | `/rmr` | Show how many rare kills are tracked |
 | `/rmr list` | List all kills with name, date, map, and kill count |
+| `/rmr toggle` | Hide or show all pins on minimap and world map |
 | `/rmr clear` | Begin wipe of all saved kills (requires confirmation) |
 | `/rmr confirm` | Confirm a pending `/rmr clear` |
 
@@ -59,7 +60,7 @@ That's it. No setup required.
 
 **World map** — pins appear on the zone map where you killed the rare, and also on the continent map so you can see at a glance which zones you've cleared. Open with `M`.
 
-**Minimap** — pins appear when you are in the same zone as the kill. When the location is off-screen the pin floats to the nearest edge of the minimap so you always know which direction to head.
+**Minimap** — pins appear when you are in the same zone as the kill. When the location is off-screen the pin floats to the nearest edge of the minimap so you always know which direction to head. When you are within roughly 150 yards of a kill location the pin fades to 20% opacity, making it easy to see when you've arrived.
 
 **Tooltip** — hover any pin to see:
 - Mob name (in rare gold)

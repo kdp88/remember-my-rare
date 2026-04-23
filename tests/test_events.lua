@@ -59,8 +59,7 @@ end
 
 local function fireUnitDied(guid)
     guid = guid or RARE_GUID
-    _G._combatLogArgs = { 0, "UNIT_DIED", false, "srcGUID", "Player", 0, 0, guid, "Target", 0, 0 }
-    capturedFrame:FireEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    capturedFrame:FireEvent("UNIT_DIED", guid)
 end
 
 local function fireEnteringWorld()
@@ -74,12 +73,18 @@ TestEventsInit = {}
 function TestEventsInit:setUp()
     ResetDB()
     printedMessages = {}
+    print = function(msg) table.insert(printedMessages, msg) end
     capturedFrame   = nil
-    -- Reinitialise to get a fresh event frame.
+    -- Reinstall the frame-capture wrapper so dofile(Events.lua) populates capturedFrame.
+    local _orig = CreateFrame
+    CreateFrame = function(...) capturedFrame = _orig(...); return capturedFrame end
     RMR.Events = {}
     dofile(ADDON_ROOT .. "Events.lua")
+    CreateFrame = _orig
     RMR.WorldMap.Refresh = function() end
+    RMR.WorldMap.AddPin  = function() end
     RMR.Minimap.Refresh  = function() end
+    RMR.Minimap.AddPin   = function() end
     RMR.Events:Init()
 end
 
@@ -94,11 +99,17 @@ TestKillDetection = {}
 function TestKillDetection:setUp()
     ResetDB()
     printedMessages = {}
+    print = function(msg) table.insert(printedMessages, msg) end
     capturedFrame   = nil
+    local _orig = CreateFrame
+    CreateFrame = function(...) capturedFrame = _orig(...); return capturedFrame end
     RMR.Events = {}
     dofile(ADDON_ROOT .. "Events.lua")
+    CreateFrame = _orig
     RMR.WorldMap.Refresh = function() end
+    RMR.WorldMap.AddPin  = function() end
     RMR.Minimap.Refresh  = function() end
+    RMR.Minimap.AddPin   = function() end
     RMR.Events:Init()
     -- Default target is no target.
     UnitGUID           = function() return nil end
@@ -299,11 +310,18 @@ TestGuidParsing = {}
 
 function TestGuidParsing:setUp()
     ResetDB()
+    printedMessages = {}
+    print = function(msg) table.insert(printedMessages, msg) end
     capturedFrame = nil
+    local _orig = CreateFrame
+    CreateFrame = function(...) capturedFrame = _orig(...); return capturedFrame end
     RMR.Events = {}
     dofile(ADDON_ROOT .. "Events.lua")
+    CreateFrame = _orig
     RMR.WorldMap.Refresh = function() end
+    RMR.WorldMap.AddPin  = function() end
     RMR.Minimap.Refresh  = function() end
+    RMR.Minimap.AddPin   = function() end
     RMR.Events:Init()
 end
 
@@ -314,8 +332,7 @@ local function killWithGUID(guid, npcID)
     C_Map.GetBestMapForUnit    = function() return TEST_MAP_ID end
     C_Map.GetPlayerMapPosition = function() return TEST_POS end
     capturedFrame:FireEvent("PLAYER_TARGET_CHANGED")
-    _G._combatLogArgs = { 0, "UNIT_DIED", false, "", "", 0, 0, guid, "", 0, 0 }
-    capturedFrame:FireEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    capturedFrame:FireEvent("UNIT_DIED", guid)
 end
 
 function TestGuidParsing:test_standard_creature_guid_parsed_correctly()
