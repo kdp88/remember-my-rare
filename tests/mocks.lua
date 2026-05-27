@@ -97,6 +97,7 @@ UIParent = CreateFrame("Frame")
 UnitGUID           = function() return nil end
 UnitClassification = function() return "normal" end
 UnitName           = function() return "Unknown" end
+IsInInstance       = function() return false end
 
 -- ─── C_Map stubs ───────────────────────────────────────────────────────────
 

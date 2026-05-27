@@ -24,6 +24,7 @@ end
 
 local function OnTargetChanged()
     if not initialized then return end
+    if IsInInstance() then return end
 
     local guid = UnitGUID("target")
     if not guid then return end

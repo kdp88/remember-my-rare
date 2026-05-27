@@ -2,7 +2,7 @@
 ## Title: Remember My Rare
 ## Notes: Marks the world map and minimap with rare mobs you have killed
 ## Author: kp
-## Version: 1.0.0
+## Version: 1.0.1
 ## SavedVariables: RMR_DB
 
 Core.lua
