@@ -106,8 +106,8 @@ There is no expiry — pins stay until you explicitly run `/rmr clear`.
 Requires Lua 5.4 and LuaUnit (installed via LuaRocks):
 
 ```powershell
-$env:LUA_PATH = "C:\Users\kpasc\.luarocks\share\lua\5.4\?.lua;;"
-& "C:\Users\kpasc\AppData\Local\Programs\Lua\bin\lua.exe" tests/run_tests.lua -v
+$env:LUA_PATH = "C:\Users\user\.luarocks\share\lua\5.4\?.lua;;"
+& "C:\Users\user\AppData\Local\Programs\Lua\bin\lua.exe" tests/run_tests.lua -v
 ```
 
 Or if you added the profile function:
